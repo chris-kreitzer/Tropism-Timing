@@ -86,74 +86,95 @@ BT_ML = function(data){
   #' modify the input data
   wins_all = rowSums(data, na.rm = T)
   data_counts = BradleyTerry2::countsToBinomial(data)
+  priors = as.numeric(rep(1, ncol(data)))
+  names(priors) = colnames(data)
+
+  #' for-loop to start ML approach
+  iteration = function(priors, wins_all, data_counts){
+    j = vector(mode = 'numeric')
+    for(i in names(wins_all)){
+      sub = data_counts[which(data_counts$player1 == i | data_counts$player2 == i), ]
+      sub$prior1[which(sub$player1 %in% names(priors))] = priors[which(names(priors) %in% sub$player1)]
+      sub$prior2[which(sub$player2 %in% names(priors))] = priors[which(names(priors) %in% sub$player2)]
+      
+      sub$ratio = (sub$win1 + sub$win2) / (sub$prior1 + sub$prior2)
+      sub.ratio = sum(sub$ratio)
+      pi = wins_all[[i]] / sub.ratio
+      names(pi) = i
+      j[i] = pi
+    }
+    
+    prior = sum(j)
+    post = j / prior
+    return(post)
+  }
+  
+  #' iterate ML until convergence
+  posterior_ML = data.frame()
+  p0 = iteration(priors = priors, wins_all = wins_all, data_counts = data_counts)
+  
+  iter = 0
+  while (iter < 20) {
+    p1 = iteration(priors = p0, wins_all = wins_all, data_counts = data_counts)
+    p2 = iteration(priors = p1, wins_all = wins_all, data_counts = data_counts)
+    p3 = iteration(priors = p2, wins_all = wins_all, data_counts = data_counts)
+    p4 = iteration(priors = p3, wins_all = wins_all, data_counts = data_counts)
+    p5 = iteration(priors = p4, wins_all = wins_all, data_counts = data_counts)
+    p6 = iteration(priors = p5, wins_all = wins_all, data_counts = data_counts)
+    p7 = iteration(priors = p6, wins_all = wins_all, data_counts = data_counts)
+    p8 = iteration(priors = p7, wins_all = wins_all, data_counts = data_counts)
+    p9 = iteration(priors = p8, wins_all = wins_all, data_counts = data_counts)
+    p10 = iteration(priors = p9, wins_all = wins_all, data_counts = data_counts)
+    p11 = iteration(priors = p10, wins_all = wins_all, data_counts = data_counts)
+    p12 = iteration(priors = p11, wins_all = wins_all, data_counts = data_counts)
+    p13 = iteration(priors = p12, wins_all = wins_all, data_counts = data_counts)
+    p14 = iteration(priors = p13, wins_all = wins_all, data_counts = data_counts)
+    p15 = iteration(priors = p14, wins_all = wins_all, data_counts = data_counts)
+    p16 = iteration(priors = p15, wins_all = wins_all, data_counts = data_counts)
+    p17 = iteration(priors = p16, wins_all = wins_all, data_counts = data_counts)
+    p18 = iteration(priors = p17, wins_all = wins_all, data_counts = data_counts)
+    p19 = iteration(priors = p18, wins_all = wins_all, data_counts = data_counts)
+    p20 = iteration(priors = p19, wins_all = wins_all, data_counts = data_counts)
+    posterior_ML = rbind(p0, p1, p2, p3, p4, p5, p6,
+                p7, p8, p9, p10, p11, p12,
+                p13, p14, p15, p16, p17,
+                p18, p19, p20)
+    iter = iter + 1
+    
+  }
+  
+  return(posterior_ML)
   
 }
 
-BT_ML(data = wiki)
 
+x = BT_ML(data = wiki)
+x = as.data.frame(x)
 
+#' Visualization; where the ML converges to 1
+plot(NULL, ylim = c(0,1), xlim = c(0, 20))
+
+lines(x$A)
+points(x$A)
+lines(x$B)
+lines(x$C)
+lines(x$D)
+sum(x[1, ])
 a = rowSums(wiki)
-iteration = function(priors){
-  j = vector(mode = 'numeric')
-  for(i in names(a)){
-    sub = wiki_counts[which(wiki_counts$player1 == i | wiki_counts$player2 == i), ]
-    sub$prior1[which(sub$player1 %in% names(priors))] = priors[which(names(priors) %in% sub$player1)]
-    sub$prior2[which(sub$player2 %in% names(priors))] = priors[which(names(priors) %in% sub$player2)]
 
-    sub$ratio = (sub$win1 + sub$win2) / (sub$prior1 + sub$prior2)
-    sub.ratio = sum(sub$ratio)
-    pi = a[[i]] / sub.ratio
-    names(pi) = i
-    print(sub)
-    j[i] = pi
-  }
-  prior = sum(j)
-  post = j / prior
-  return(post)
-}
+
+
+p0 = c(1,1,1,1)
+names(p0) = c('A', 'B', 'C', 'D')
 
 p1 = iteration(priors = b)
-
-p1$prior1[which(p1$player1 %in% names(b))] = b[which(names(b) %in% p1$player1)]
-p1$prior2[which(p1$player2 %in% names(b))] = b[which(names(b) %in% p1$player2)]
-b
-str(p1)
-str(p1)
-
-b[which(names(b) == 'D')][[1]]
-str(b)
-names(b)
-names(a)
-names(b)
+p2 = iteration(priors = p1)
 
 
 
 
-b = c(1,1,1,1)
-names(b) = c('A', 'B', 'C', 'D')
-b
-
-b[which(names(b) == 'A')][[1]]
-a
-b
-
-
-
-
-iter = 0
-while (iter < 20) {
-
-  p1 = iteration(priors = 1))
-  p2 = iteration(priors = p1)
-  iter = iter + 1
-  
-}
-
-p = iteration()
-sum(p)
-
-names(p)
-
-
-
+out = as.data.frame(out)
+str(out)
+plot(out$C)
+str(out)
 
