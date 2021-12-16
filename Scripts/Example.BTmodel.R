@@ -72,10 +72,26 @@ wiki = as.table(wiki)
 
 wiki_counts = BradleyTerry2::countsToBinomial(wiki)
 wiki_model = BradleyTerry2::BTm(cbind(win1, win2), player1, player2, ~player, id = 'player', data = wiki_counts)
-summary(wiki_model)
-coefficients(wiki_model)
 
-coefficients
+
+## Model formulation for BradleyTerry - ML estimation;
+## note that this function requires a fully-connected network model otherwise the ML cannot be estimated
+
+BT_ML = function(data){
+  if(!inherits(x = data, what = 'table')) stop('Input data must be in table format', call. = F)
+  if(!any(grepl(pattern = '*BradleyTerry2', x = search()))){
+    require(BradleyTerry2)
+  } else cat('BradleyTerry2 was loaded previously')
+  
+  #' modify the input data
+  wins_all = rowSums(data, na.rm = T)
+  data_counts = BradleyTerry2::countsToBinomial(data)
+  
+}
+
+BT_ML(data = wiki)
+
+
 
 
 
