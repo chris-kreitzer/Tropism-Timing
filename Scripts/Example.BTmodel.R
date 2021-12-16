@@ -92,12 +92,25 @@ BT_ML = function(data){
 BT_ML(data = wiki)
 
 
+a
 
+j = vector(mode = 'numeric')
 
+for(i in names(a)){
+  sub = wiki_counts[which(wiki_counts$player1 == i | wiki_counts$player2 == i), ]
+  sub$ratio = (sub$win1 + sub$win2) / (1+1)
+  sub.ratio = sum(sub$ratio)
+  pi = a[[i]] / sub.ratio
+  names(pi) = i
+  j[i] = pi
+  #print(a[[i]])
+  
+}
+j
 
-
-
-
+length(j)
+sum(wiki_counts$win1)
+a[['A']]
 
 
 
