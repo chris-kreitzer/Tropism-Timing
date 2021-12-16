@@ -94,8 +94,13 @@ BT_ML = function(data){
     j = vector(mode = 'numeric')
     for(i in names(wins_all)){
       sub = data_counts[which(data_counts$player1 == i | data_counts$player2 == i), ]
-      sub$prior1[which(sub$player1 %in% names(priors))] = priors[which(names(priors) %in% sub$player1)]
-      sub$prior2[which(sub$player2 %in% names(priors))] = priors[which(names(priors) %in% sub$player2)]
+      sub$player1 = as.character(as.factor(sub$player1))
+      sub$player2 = as.character(as.factor(sub$player2))
+      sub$prior1 = NA
+      sub$prior2 = NA
+      #' add priors in new column
+      sub$prior1[which(sub$player1 %in% names(priors))] = priors[which(sub$player1 %in% names(priors))][[1]]
+      sub$prior2[which(sub$player2 %in% names(priors))] = priors[which(sub$player2 %in% names(priors))][[1]]
       
       sub$ratio = (sub$win1 + sub$win2) / (sub$prior1 + sub$prior2)
       sub.ratio = sum(sub$ratio)
@@ -149,7 +154,11 @@ BT_ML = function(data){
 
 
 x = BT_ML(data = wiki)
+y = BT_ML(data = test)
 x = as.data.frame(x)
+
+
+sum(y[20,])
 
 #' Visualization; where the ML converges to 1
 plot(NULL, ylim = c(0,1), xlim = c(0, 20))
@@ -163,18 +172,62 @@ sum(x[1, ])
 a = rowSums(wiki)
 
 
-
-p0 = c(1,1,1,1)
-names(p0) = c('A', 'B', 'C', 'D')
-
-p1 = iteration(priors = b)
-p2 = iteration(priors = p1)
-
+test = matrix(c(0, 1, 1,1,1,3,0,3,3,3,2,2,0,2,2,1,1,1,0,1,3,3,3,3,0), ncol = 5, byrow = T)
+colnames(test) = c('regio', 'bone', 'bladder', 'other', 'dist')
+row.names(test) = colnames(test)
+test = as.table(test)
+y = BT_ML(data = test)
 
 
 
-out = as.data.frame(out)
-str(out)
-plot(out$C)
-str(out)
+
+
+
+
+
+iteration = function(priors, wins_all, data_counts){
+  j = vector(mode = 'numeric')
+  for(i in names(wins_all)){
+    sub = data_counts[which(data_counts$player1 == i | data_counts$player2 == i), ]
+    sub$prior1[which(sub$player1 %in% names(priors))] = priors[which(names(priors) %in% sub$player1)]
+    sub$prior2[which(sub$player2 %in% names(priors))] = priors[which(names(priors) %in% sub$player2)]
+    
+    sub$ratio = (sub$win1 + sub$win2) / (sub$prior1 + sub$prior2)
+    sub.ratio = sum(sub$ratio)
+    pi = wins_all[[i]] / sub.ratio
+    names(pi) = i
+    j[i] = pi
+  }
+  
+  prior = sum(j)
+  post = j / prior
+  return(post)
+}
+
+
+wins_all = rowSums(test)
+data_counts = BradleyTerry2::countsToBinomial(test)
+
+
+iteration(priors = priors, wins_all = wins_all, data_counts = data_counts)
+priors = c(rep(1, ncol(test)))
+names(priors) = colnames(test)
+
+head(y)
+
+
+a = data_counts
+a$player1 = as.character(as.factor(a$player1))
+a$player2 = as.character(as.factor(a$player2))
+a$prior1 = NA
+a$prior2 = NA
+
+
+
+a$prior1[which(a$player1 %in% names(priors))] = priors[which(a$player1 %in% names(priors))][[1]]
+a$prior2[which(a$player2 %in% names(priors))] = priors[which(a$player2 %in% names(priors))][[1]]
+
+
+
+
 
