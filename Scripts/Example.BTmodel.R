@@ -92,28 +92,67 @@ BT_ML = function(data){
 BT_ML(data = wiki)
 
 
+a = rowSums(wiki)
+iteration = function(priors){
+  j = vector(mode = 'numeric')
+  for(i in names(a)){
+    sub = wiki_counts[which(wiki_counts$player1 == i | wiki_counts$player2 == i), ]
+    sub$prior1[which(sub$player1 %in% names(priors))] = priors[which(names(priors) %in% sub$player1)]
+    sub$prior2[which(sub$player2 %in% names(priors))] = priors[which(names(priors) %in% sub$player2)]
+
+    sub$ratio = (sub$win1 + sub$win2) / (sub$prior1 + sub$prior2)
+    sub.ratio = sum(sub$ratio)
+    pi = a[[i]] / sub.ratio
+    names(pi) = i
+    print(sub)
+    j[i] = pi
+  }
+  prior = sum(j)
+  post = j / prior
+  return(post)
+}
+
+p1 = iteration(priors = b)
+
+p1$prior1[which(p1$player1 %in% names(b))] = b[which(names(b) %in% p1$player1)]
+p1$prior2[which(p1$player2 %in% names(b))] = b[which(names(b) %in% p1$player2)]
+b
+str(p1)
+str(p1)
+
+b[which(names(b) == 'D')][[1]]
+str(b)
+names(b)
+names(a)
+names(b)
+
+
+
+
+b = c(1,1,1,1)
+names(b) = c('A', 'B', 'C', 'D')
+b
+
+b[which(names(b) == 'A')][[1]]
 a
+b
 
-j = vector(mode = 'numeric')
 
-for(i in names(a)){
-  sub = wiki_counts[which(wiki_counts$player1 == i | wiki_counts$player2 == i), ]
-  sub$ratio = (sub$win1 + sub$win2) / (1+1)
-  sub.ratio = sum(sub$ratio)
-  pi = a[[i]] / sub.ratio
-  names(pi) = i
-  j[i] = pi
-  #print(a[[i]])
+
+
+iter = 0
+while (iter < 20) {
+
+  p1 = iteration(priors = 1))
+  p2 = iteration(priors = p1)
+  iter = iter + 1
   
 }
-j
 
-length(j)
-sum(wiki_counts$win1)
-a[['A']]
+p = iteration()
+sum(p)
 
-
-
+names(p)
 
 
 
