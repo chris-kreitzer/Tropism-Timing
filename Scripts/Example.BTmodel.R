@@ -92,26 +92,32 @@ BT_ML = function(data){
   #' for-loop to start ML approach
   iteration = function(priors, wins_all, data_counts){
     j = vector(mode = 'numeric')
-    for(i in names(wins_all)){
-      sub = data_counts[which(data_counts$player1 == i | data_counts$player2 == i), ]
+    
+    for(i in 1:length(wins_all)){
+      sub = data_counts[which(data_counts$player1 == names(wins_all)[i] | data_counts$player2 == names(wins_all[i])), ]
       sub$player1 = as.character(as.factor(sub$player1))
       sub$player2 = as.character(as.factor(sub$player2))
       sub$prior1 = NA
       sub$prior2 = NA
+      
       #' add priors in new column
-      sub$prior1[which(sub$player1 %in% names(priors))] = priors[which(sub$player1 %in% names(priors))][[1]]
-      sub$prior2[which(sub$player2 %in% names(priors))] = priors[which(sub$player2 %in% names(priors))][[1]]
+      for(i in 1:nrow(sub)){
+        sub$prior1[i] = priors[which(sub$player1[i] == names(priors))]
+        sub$prior2[i] = priors[which(sub$player2[i] == names(priors))]
+      }
       
       sub$ratio = (sub$win1 + sub$win2) / (sub$prior1 + sub$prior2)
       sub.ratio = sum(sub$ratio)
-      pi = wins_all[[i]] / sub.ratio
-      names(pi) = i
-      j[i] = pi
+      
+      p_vec = wins_all[i] / sub.ratio
+      print(p_vec)
+      # names(pi) = i
+      # j[i] = pi
     }
-    
-    prior = sum(j)
-    post = j / prior
-    return(post)
+    # print(wins_all[i][[1]])
+    # prior = sum(j)
+    # post = j / prior
+    # return(post)
   }
   
   #' iterate ML until convergence
@@ -222,12 +228,16 @@ a$player2 = as.character(as.factor(a$player2))
 a$prior1 = NA
 a$prior2 = NA
 
+for(i in 1:nrow(a)){
+  a$prior1[i] = priors[which(a$player1[i] == names(priors))]
+}
 
+priors
 
-a$prior1[which(a$player1 %in% names(priors))] = priors[which(a$player1 %in% names(priors))][[1]]
-a$prior2[which(a$player2 %in% names(priors))] = priors[which(a$player2 %in% names(priors))][[1]]
+a$prior1[which(a$player1 == names(priors))] = priors[which(a$player1 == names(priors))]
+a$prior2[which(a$player2 %in% names(priors))] = priors[which(a$player2 %in% names(priors))]
 
-
-
-
+priors = c(0, 2, 3, 4, 1)
+names(priors) = c('bone', 'regio', 'bladder', 'other', 'dist')
+str(priors)
 
