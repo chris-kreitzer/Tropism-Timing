@@ -81,7 +81,7 @@ BT_ML = function(data){
   if(!inherits(x = data, what = 'table')) stop('Input data must be in table format', call. = F)
   if(!any(grepl(pattern = '*BradleyTerry2', x = search()))){
     require(BradleyTerry2)
-  } else cat('BradleyTerry2 was loaded previously')
+  } else cat('BradleyTerry2 was loaded previously\n')
   
   #' modify the input data
   wins_all = rowSums(data, na.rm = T)
@@ -91,90 +91,83 @@ BT_ML = function(data){
 
   #' for-loop to start ML approach
   iteration = function(priors, wins_all, data_counts){
-    j = vector(mode = 'numeric')
-    
-    for(i in 1:length(wins_all)){
-      sub = data_counts[which(data_counts$player1 == names(wins_all)[i] | data_counts$player2 == names(wins_all[i])), ]
-      sub$player1 = as.character(as.factor(sub$player1))
-      sub$player2 = as.character(as.factor(sub$player2))
+    j = c()
+    for(i in names(wins_all)){
+      sub = data_counts[which(data_counts$player1 == i | data_counts$player2 == i), ]
       sub$prior1 = NA
       sub$prior2 = NA
-      
-      #' add priors in new column
-      for(i in 1:nrow(sub)){
-        sub$prior1[i] = priors[which(sub$player1[i] == names(priors))]
-        sub$prior2[i] = priors[which(sub$player2[i] == names(priors))]
+      for(row in 1:nrow(sub)){
+        sub$prior1[row] = priors[which(sub$player1[row] == names(priors))]
+        sub$prior2[row] = priors[which(sub$player2[row] == names(priors))]
       }
       
+      #' calculate the ratios
       sub$ratio = (sub$win1 + sub$win2) / (sub$prior1 + sub$prior2)
       sub.ratio = sum(sub$ratio)
-      
-      p_vec = wins_all[i] / sub.ratio
-      print(p_vec)
-      # names(pi) = i
-      # j[i] = pi
+      p.prior = wins_all[[i]] / sub.ratio
+      names(p.prior) = i
+      j = c(j, p.prior)
     }
-    # print(wins_all[i][[1]])
-    # prior = sum(j)
-    # post = j / prior
-    # return(post)
+    
+    #' post MLE normalization
+    prior_sum = sum(j)
+    post_p = j / prior_sum
+    return(post_p)
   }
   
   #' iterate ML until convergence
   posterior_ML = data.frame()
   p0 = iteration(priors = priors, wins_all = wins_all, data_counts = data_counts)
   
-  iter = 0
-  while (iter < 20) {
-    p1 = iteration(priors = p0, wins_all = wins_all, data_counts = data_counts)
-    p2 = iteration(priors = p1, wins_all = wins_all, data_counts = data_counts)
-    p3 = iteration(priors = p2, wins_all = wins_all, data_counts = data_counts)
-    p4 = iteration(priors = p3, wins_all = wins_all, data_counts = data_counts)
-    p5 = iteration(priors = p4, wins_all = wins_all, data_counts = data_counts)
-    p6 = iteration(priors = p5, wins_all = wins_all, data_counts = data_counts)
-    p7 = iteration(priors = p6, wins_all = wins_all, data_counts = data_counts)
-    p8 = iteration(priors = p7, wins_all = wins_all, data_counts = data_counts)
-    p9 = iteration(priors = p8, wins_all = wins_all, data_counts = data_counts)
-    p10 = iteration(priors = p9, wins_all = wins_all, data_counts = data_counts)
-    p11 = iteration(priors = p10, wins_all = wins_all, data_counts = data_counts)
-    p12 = iteration(priors = p11, wins_all = wins_all, data_counts = data_counts)
-    p13 = iteration(priors = p12, wins_all = wins_all, data_counts = data_counts)
-    p14 = iteration(priors = p13, wins_all = wins_all, data_counts = data_counts)
-    p15 = iteration(priors = p14, wins_all = wins_all, data_counts = data_counts)
-    p16 = iteration(priors = p15, wins_all = wins_all, data_counts = data_counts)
-    p17 = iteration(priors = p16, wins_all = wins_all, data_counts = data_counts)
-    p18 = iteration(priors = p17, wins_all = wins_all, data_counts = data_counts)
-    p19 = iteration(priors = p18, wins_all = wins_all, data_counts = data_counts)
-    p20 = iteration(priors = p19, wins_all = wins_all, data_counts = data_counts)
-    posterior_ML = rbind(p0, p1, p2, p3, p4, p5, p6,
-                p7, p8, p9, p10, p11, p12,
-                p13, p14, p15, p16, p17,
-                p18, p19, p20)
-    iter = iter + 1
-    
-  }
+  p1 = iteration(priors = p0, wins_all = wins_all, data_counts = data_counts)
+  p2 = iteration(priors = p1, wins_all = wins_all, data_counts = data_counts)
+  p3 = iteration(priors = p2, wins_all = wins_all, data_counts = data_counts)
+  p4 = iteration(priors = p3, wins_all = wins_all, data_counts = data_counts)
+  p5 = iteration(priors = p4, wins_all = wins_all, data_counts = data_counts)
+  p6 = iteration(priors = p5, wins_all = wins_all, data_counts = data_counts)
+  p7 = iteration(priors = p6, wins_all = wins_all, data_counts = data_counts)
+  p8 = iteration(priors = p7, wins_all = wins_all, data_counts = data_counts)
+  p9 = iteration(priors = p8, wins_all = wins_all, data_counts = data_counts)
+  p10 = iteration(priors = p9, wins_all = wins_all, data_counts = data_counts)
+  p11 = iteration(priors = p10, wins_all = wins_all, data_counts = data_counts)
+  p12 = iteration(priors = p11, wins_all = wins_all, data_counts = data_counts)
+  p13 = iteration(priors = p12, wins_all = wins_all, data_counts = data_counts)
+  p14 = iteration(priors = p13, wins_all = wins_all, data_counts = data_counts)
+  p15 = iteration(priors = p14, wins_all = wins_all, data_counts = data_counts)
+  p16 = iteration(priors = p15, wins_all = wins_all, data_counts = data_counts)
+  p17 = iteration(priors = p16, wins_all = wins_all, data_counts = data_counts)
+  p18 = iteration(priors = p17, wins_all = wins_all, data_counts = data_counts)
+  p19 = iteration(priors = p18, wins_all = wins_all, data_counts = data_counts)
+  p20 = iteration(priors = p19, wins_all = wins_all, data_counts = data_counts)
+  
+  posterior_ML = rbind(p0, p1, p2, p3, p4, p5, p6,
+                       p7, p8, p9, p10, p11, p12,
+                       p13, p14, p15, p16, p17,
+                       p18, p19, p20)
   
   return(posterior_ML)
   
 }
 
+x = BT_ML(data = test)
+x = data.frame(x, row.names = dimnames(x) [[1]])
 
-x = BT_ML(data = wiki)
-y = BT_ML(data = test)
-x = as.data.frame(x)
-
-
-sum(y[20,])
 
 #' Visualization; where the ML converges to 1
 plot(NULL, ylim = c(0,1), xlim = c(0, 20))
 
-lines(x$A)
-points(x$A)
-lines(x$B)
-lines(x$C)
-lines(x$D)
-sum(x[1, ])
+lines(x$regio)
+points(x$regio)
+lines(x$bone)
+points(x$bone)
+lines(x$bladder)
+points(x$bladder, col = 'red')
+lines(x$other)
+points(x$other, col = 'green')
+lines(x$dist)
+points(x$dist, col = 'blue')
+
+
 a = rowSums(wiki)
 
 
@@ -182,7 +175,7 @@ test = matrix(c(0, 1, 1,1,1,3,0,3,3,3,2,2,0,2,2,1,1,1,0,1,3,3,3,3,0), ncol = 5, 
 colnames(test) = c('regio', 'bone', 'bladder', 'other', 'dist')
 row.names(test) = colnames(test)
 test = as.table(test)
-y = BT_ML(data = test)
+test
 
 
 
@@ -191,53 +184,10 @@ y = BT_ML(data = test)
 
 
 
-iteration = function(priors, wins_all, data_counts){
-  j = vector(mode = 'numeric')
-  for(i in names(wins_all)){
-    sub = data_counts[which(data_counts$player1 == i | data_counts$player2 == i), ]
-    sub$prior1[which(sub$player1 %in% names(priors))] = priors[which(names(priors) %in% sub$player1)]
-    sub$prior2[which(sub$player2 %in% names(priors))] = priors[which(names(priors) %in% sub$player2)]
-    
-    sub$ratio = (sub$win1 + sub$win2) / (sub$prior1 + sub$prior2)
-    sub.ratio = sum(sub$ratio)
-    pi = wins_all[[i]] / sub.ratio
-    names(pi) = i
-    j[i] = pi
-  }
-  
-  prior = sum(j)
-  post = j / prior
-  return(post)
-}
 
 
-wins_all = rowSums(test)
-data_counts = BradleyTerry2::countsToBinomial(test)
 
-
-iteration(priors = priors, wins_all = wins_all, data_counts = data_counts)
-priors = c(rep(1, ncol(test)))
-names(priors) = colnames(test)
-
-head(y)
-
-
-a = data_counts
-a$player1 = as.character(as.factor(a$player1))
-a$player2 = as.character(as.factor(a$player2))
-a$prior1 = NA
-a$prior2 = NA
-
-for(i in 1:nrow(a)){
-  a$prior1[i] = priors[which(a$player1[i] == names(priors))]
-}
-
-priors
-
-a$prior1[which(a$player1 == names(priors))] = priors[which(a$player1 == names(priors))]
-a$prior2[which(a$player2 %in% names(priors))] = priors[which(a$player2 %in% names(priors))]
-
-priors = c(0, 2, 3, 4, 1)
+priors = c(1, 1, 1, 1, 1)
 names(priors) = c('bone', 'regio', 'bladder', 'other', 'dist')
-str(priors)
+
 
