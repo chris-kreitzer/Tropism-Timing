@@ -80,10 +80,16 @@ for(i in 1:nrow(m)){
   m[row.names(m)[i], ] = occurrence[which(names(occurrence) == row.names(m)[i])]
 }
 
+#' counts to binomial
+c.binom = BradleyTerry2::countsToBinomial(m)
 
-
-
-
+pp.model = BradleyTerry2::BTm(cbind(win1, win2),
+                              player1, player2,
+                              ~player, id = 'player',
+                              data = c.binom)
+pp.model
+plot(coefficients(pp.model))
+summary(pp.model)
 
 
 

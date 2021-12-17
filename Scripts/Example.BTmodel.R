@@ -134,7 +134,7 @@ box(lwd = 2)
 
 
 #' test example
-# test = matrix(c(0, 1, 1,1,1,3,0,3,3,3,2,2,0,2,2,1,1,1,0,1,3,3,3,3,0), ncol = 5, byrow = T)
+#' test = matrix(c(0, 1, 1,1,1,3,0,3,3,3,2,2,0,2,2,1,1,1,0,1,3,3,3,3,0), ncol = 5, byrow = T)
 # colnames(test) = c('regio', 'bone', 'bladder', 'other', 'dist')
 # row.names(test) = colnames(test)
 # test = as.table(test)
