@@ -5,6 +5,8 @@
 ## and works with two hand-written examples
 ## the first is comming from the wiki-page (BradleyTerry and the second one from real data)
 
+## chris-kreitzer
+## 12/16/2021
 
 
 setup(working.path = '~/Documents/GitHub/Tropism-Timing/')
