@@ -1,6 +1,10 @@
 ## Tropism. Pattern of metastatic dissemination;
-## We start with Prostate Cancer (primaries)
-## 
+## Establish an MLE algorithm to assess the strength parameters
+## of individual items (analogue to BT model)
+## this site, introduces the basic algorithm
+## and works with two hand-written examples
+## the first is comming from the wiki-page (BradleyTerry and the second one from real data)
+
 
 
 setup(working.path = '~/Documents/GitHub/Tropism-Timing/')
@@ -11,53 +15,8 @@ library(readxl)
 # install.packages("fitdistrplus")
 library(fitdistrplus)
 library(tidyr)
-install.packages('BradleyTerry2')
+# install.packages('BradleyTerry2')
 library(BradleyTerry2)
-
-
-## Data
-data = read_excel('Data/tableS2_data.xlsx', skip = 2)
-
-
-# starting with Prostate first
-data_prostate = data[which(data$cancer_type == 'prostate cancer'), ]
-data_PP = data_prostate[which(data_prostate$sample_type == 'Primary'), ]
-data_PP_death = data_PP[which(data_PP$os_status == 'dead'), ]
-
-#' start with simple example
-plot.new()
-hist(data_PP_death$met_count, nclass = nclass.scott(data_PP_death$met_count), xaxt = 'n')
-axis(1, at = seq(0, 22, 2))
-summary(data_PP_death$met_count)
-
-#' OS for primary prostate cancer patients
-plot.new()
-hist(data_PP_death$os_days, 
-     nclass = nclass.scott(data_PP_death$os_days), 
-     xaxt = 'n',
-     main = paste0('Median OS = ', summary(data_PP_death$os_days)[['Median']], ' days'))
-axis(1, at = seq(0, 2200, by = 500))
-
-#' is there a association with metastatic sites and OS_days?
-plot(data_PP_death$met_count, data_PP_death$os_days, main = 'Association with met. counts and OS', xlab = 'met count', ylab = 'OS')
-abline(lm(data_PP_death$os_days ~ data_PP_death$met_count), lwd = 2.5, col = 'red')
-model.simple = lm(data_PP_death$os_days ~ data_PP_death$met_count)
-summary(lm(data_PP_death$os_days ~ data_PP_death$met_count))
-plot(model.simple)
-
-#' site distribution
-sites = as.data.frame(data_PP_death[, c('met_site_mapped')])
-sites_split = strsplit(as.character(sites$met_site_mapped), '/', fixed = T)
-max.length = max(sapply(sites_split, length))
-sites_new = lapply(sites_split, function(x){c(x, rep(NA, max.length - length(x)))})
-sites_new = as.data.frame(do.call(rbind, sites_new))
-View(sites_new)
-
-barplot(sort(table(sites_new$V1), decreasing = T), las = 2)
-barplot(sort(table(sites_new$V2), decreasing = T), las = 2)
-barplot(sort(table(sites_new$V3), decreasing = T), las = 2)
-
-devtools::install_github("hturner/BradleyTerry2")
 
 
 ###############################################################################
@@ -171,27 +130,6 @@ points(x$bone,  col = 'blue', lwd = 1.5, pch = 1, ylim = c(0.2, 0.35),
 box(lwd = 2)
 
 
-points(x$bone)
-lines(x$bladder)
-points(x$bladder, col = 'red')
-lines(x$other)
-points(x$other, col = 'green')
-lines(x$dist)
-points(x$dist, col = 'blue')
-
-
-plot.new()
-
-
-
-
-
-
-
-
-
-
-
 
 #' test example
 # test = matrix(c(0, 1, 1,1,1,3,0,3,3,3,2,2,0,2,2,1,1,1,0,1,3,3,3,3,0), ncol = 5, byrow = T)
@@ -202,3 +140,4 @@ plot.new()
 # names(priors) = c('bone', 'regio', 'bladder', 'other', 'dist')
 
 
+#' out
