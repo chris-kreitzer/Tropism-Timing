@@ -154,11 +154,23 @@ x = data.frame(x, row.names = dimnames(x) [[1]])
 
 
 #' Visualization; where the ML converges to 1
-plot(NULL, ylim = c(0,1), xlim = c(0, 20))
-
+#' looking into the behavior of regional lymph nodes
+plot(x$regio,  col = 'red', lwd = 1.5, pch = 1, ylim = c(0.08, 0.150), 
+     yaxt = 'n', ylab = 'estimate', xlab = 'iteration', main = 'MLE for regional lymph nodes')
 lines(x$regio)
-points(x$regio)
+points(x$regio,  col = 'red', lwd = 1.5, pch = 1, ylim = c(0.08, 0.150), 
+     yaxt = 'n', ylab = 'estimate', xlab = 'iteration', main = 'MLE for regional lymph nodes')
+box(lwd = 2)
+
+#' looking into bone
+plot(x$bone,  col = 'blue', lwd = 1.5, pch = 1, ylim = c(0.2, 0.350), 
+     yaxt = 'n', ylab = 'estimate', xlab = 'iteration', main = 'MLE for bone metastasis')
 lines(x$bone)
+points(x$bone,  col = 'blue', lwd = 1.5, pch = 1, ylim = c(0.2, 0.35), 
+       yaxt = 'n', ylab = 'estimate', xlab = 'iteration', main = 'MLE for bone metastasis')
+box(lwd = 2)
+
+
 points(x$bone)
 lines(x$bladder)
 points(x$bladder, col = 'red')
@@ -168,14 +180,7 @@ lines(x$dist)
 points(x$dist, col = 'blue')
 
 
-a = rowSums(wiki)
-
-
-test = matrix(c(0, 1, 1,1,1,3,0,3,3,3,2,2,0,2,2,1,1,1,0,1,3,3,3,3,0), ncol = 5, byrow = T)
-colnames(test) = c('regio', 'bone', 'bladder', 'other', 'dist')
-row.names(test) = colnames(test)
-test = as.table(test)
-test
+plot.new()
 
 
 
@@ -187,7 +192,13 @@ test
 
 
 
-priors = c(1, 1, 1, 1, 1)
-names(priors) = c('bone', 'regio', 'bladder', 'other', 'dist')
+
+#' test example
+# test = matrix(c(0, 1, 1,1,1,3,0,3,3,3,2,2,0,2,2,1,1,1,0,1,3,3,3,3,0), ncol = 5, byrow = T)
+# colnames(test) = c('regio', 'bone', 'bladder', 'other', 'dist')
+# row.names(test) = colnames(test)
+# test = as.table(test)
+# priors = c(1, 1, 1, 1, 1)
+# names(priors) = c('bone', 'regio', 'bladder', 'other', 'dist')
 
 
