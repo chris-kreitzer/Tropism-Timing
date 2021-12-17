@@ -18,7 +18,8 @@ library(fitdistrplus)
 library(tidyr)
 install.packages('BradleyTerry2')
 library(BradleyTerry2)
-
+library(ggplot2)
+library(qvcalc)
 
 ## Data
 data = read_excel('Data/tableS2_data.xlsx', skip = 2)
@@ -80,6 +81,7 @@ for(i in 1:nrow(m)){
   m[row.names(m)[i], ] = occurrence[which(names(occurrence) == row.names(m)[i])]
 }
 
+m = as.table(m)
 #' counts to binomial
 c.binom = BradleyTerry2::countsToBinomial(m)
 
@@ -87,13 +89,58 @@ pp.model = BradleyTerry2::BTm(cbind(win1, win2),
                               player1, player2,
                               ~player, id = 'player',
                               data = c.binom)
-pp.model
-plot(coefficients(pp.model))
-summary(pp.model)
+#' update the model
+pp.model.update = update(pp.model, refcat = 'liver')
+summary(pp.model.update)
+
+#' setting the 'weakest' as reference. In this case we are using liver;
+#' occurred just once
+
+#' now lets extract the model estimates and make a plot
+plot.pp = as.data.frame(coefficients(pp.model.update))
+plot.pp$sig = coef(summary(pp.model.update))[,4]
+plot.pp$variable = row.names(plot.pp)
+colnames(plot.pp)[1] = 'estimate'
+
+ggplot(plot.pp, aes(x = reorder(variable, estimate), y = estimate)) +
+  geom_point() +
+  coord_flip() +
+  scale_y_continuous(
+                     sec.axis = dup_axis()) +
+  geom_hline(yintercept = 1, linetype = 'dashed') +
+  labs(x = 'Metastatic sites', y = 'BT model estimates')
+  
+
+#' Intervals based on quasi standard errors
+pp.model.qv = qvcalc(BTabilities(pp.model.update))
+plot(pp.model.qv, las = 2)
+abline(h = 1)
 
 
+#' ML estimation of strength parameters; among each other 
+x = BT_ML(data = m) #' defined in Example.BTmodel.R script
+x$iteration = factor(x$iteration, 
+                     levels = c('p0', 'p1', 'p2', 'p3', 'p4', 'p5', 'p6', 
+                                'p7', 'p8', 'p9', 'p10', 'p11', 'p12', 
+                                'p13', 'p14', 'p15', 'p16', 'p17', 'p18', 
+                                'p19', 'p20'))
 
-
+#' Visualization
+ggplot(x, aes(x = iteration)) +
+  geom_point(aes(y = regional_lymph), col = 'red') +
+  geom_line(aes(y = regional_lymph, group = 1), col = 'red') +
+  geom_point(aes(y = bone), col = 'blue') +
+  geom_line(aes(y = bone, group = 1), col = 'blue') +
+  geom_point(aes(y = bladder_or_urinary_tract), col = 'green') +
+  geom_line(aes(y = bladder_or_urinary_tract, group = 1), col = 'green') +
+  geom_point(aes(y = other), col = 'brown') +
+  geom_line(aes(y = other, group = 1), col = 'brown') +
+  geom_point(aes(y = dist_lymph), col = 'grey') +
+  geom_line(aes(y = dist_lymph, group = 1), col = 'grey') +
+  geom_point(aes(y = genital_male), col = 'yellow') +
+  geom_line(aes(y = genital_male, group = 1), col = 'yellow') +
+  theme_bw() +
+  labs(x = '', y = 'ML estimate')
 
 
 
