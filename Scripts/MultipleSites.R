@@ -72,7 +72,25 @@ plot(NA, xlim = c(1, 7), ylim = c(0, 110), xaxt = 'n')
 barplot(sort(table(Diagnosis1$number), decreasing = T), 
         las = 1, main = 'Number of metastatic sites / date')
 
-Diagnosis1
 
+#' check if the overall outcomes stays stable
+sites_vector = as.character(unlist(strsplit(Diagnosis1$Site, split = '\\/')))
+sites_unique = length(unique(sites_vector))
+sites = table(sites_vector)
+
+#' modify the table
+m = matrix(nrow = sites_unique, 
+           ncol = sites_unique, 
+           dimnames = list(unique(sites_vector), unique(sites_vector)))
+m = as.data.frame(m)
+
+for(i in 1:nrow(m)){
+  m[row.names(m)[i], ] = sites[which(names(sites) == row.names(m)[i])]
+}
+
+m = as.table(m)
+
+#' counts to binomial
+c.binom = BradleyTerry2::countsToBinomial(m)
 
 
