@@ -67,35 +67,12 @@ for(i in 1:nrow(data_pp_split)){
   Diagnosis1 = rbind(Diagnosis1, out)
 }
 
+#' make a plot
+plot(NA, xlim = c(1, 7), ylim = c(0, 110), xaxt = 'n')
+barplot(sort(table(Diagnosis1$number), decreasing = T), 
+        las = 1, main = 'Number of metastatic sites / date')
+
 Diagnosis1
-View(data_pp_split)
-View(Diagnosis1)
-data_pp_split$First[i]
-u = paste(as.character(data_pp_split[1, c(2:4)]),collapse = '/', sep = '\\/')
-str(u)
-u
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
