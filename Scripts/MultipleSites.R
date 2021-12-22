@@ -45,3 +45,57 @@ data_pp_split[is.na(data_pp_split)] = 0
 data_pp_split = data_pp_split[which(data_pp_split$Time1 != 0), ]
 data_pp_split$First = rowSums(data_pp_split[, c(3:ncol(data_pp_split))] == data_pp_split[, 3], na.rm = T)
 
+#' expand the metastatic sites
+ncols_max_sites = max(stringr::str_count(data_pp_split$met_site_mapped, '\\/'), na.rm = T) + 1
+column_sites = paste0('Site', 1:ncols_max_sites)
+data_pp_split = tidyr::separate(data_pp_split,
+                                col = met_site_mapped,
+                                sep = '\\/',
+                                into = column_sites,
+                                remove = F,
+                                convert = T)
+
+#' extract sites involved
+Diagnosis1 = data.frame()
+for(i in 1:nrow(data_pp_split)){
+  print(i)
+  nu = data_pp_split$First[i]
+  sites = paste(as.character(data_pp_split[i, c(2: (nu+1))]), collapse = '/', sep = '\\/')
+  out = data.frame(Site = sites,
+                   Time = data_pp_split$Time1[i],
+                   number = nu)
+  Diagnosis1 = rbind(Diagnosis1, out)
+}
+
+Diagnosis1
+View(data_pp_split)
+View(Diagnosis1)
+data_pp_split$First[i]
+u = paste(as.character(data_pp_split[1, c(2:4)]),collapse = '/', sep = '\\/')
+str(u)
+u
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
