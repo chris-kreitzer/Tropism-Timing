@@ -39,7 +39,7 @@ sort(avRank)
 
 
 #' dummy example with 5 rankings and 10 items to choose
-dummy = data.frame(rank1 = c('regio', 'bone', 'bladder', 'other', 'bone', 'dist', 'dist', 'bone', 'bladder', 'dist'),
+dummy = matrix(rank1 = c('regio', 'bone', 'bladder', 'other', 'bone', 'dist', 'dist', 'bone', 'bladder', 'dist'),
                    rank2 = c('bladder', 'other', 'bone', 'adrenal', 'bone', 'bone', 'regio', 'regio', 'gential', 'regio'),
                    rank3 = c('gential', 'dist', 'other', 'regio', NA, 'liver', 'bone', 'bone', 'other', 'other'),
                    rank4 = c('other', 'regio', 'dist', 'bladder', NA, NA, 'other', 'dist', 'breast', 'dist'),
@@ -47,20 +47,45 @@ dummy = data.frame(rank1 = c('regio', 'bone', 'bladder', 'other', 'bone', 'dist'
 
 dummy = as.matrix(dummy)
 
+
 dummy.ranking = as.rankings(x = dummy, input = 'orderings')
 dummy.ranking[1]
 
-
 mod = PlackettLuce(rankings = dummy.ranking)
+summary(mod)
 coefs2 = round(coef(mod), 2)
-coefs2[names(coefs2)[1:3]]
+
+
+str(dummy.ranking)
 
 
 
+R <- as.rankings(nascar, input = "orderings", items = attr(nascar, "drivers"))
+keep <- seq_len(84)
+R2 <- R[, keep]
+str(R2)
+
+mod <- PlackettLuce(R2, npseudo = 0)
+
+summary(mod)
 
 
-library(stringr)
-sum(str_count(string = 'regio', dummy), na.rm = T)
+attr(R, which = 'dimnames')
+
+
+X <- matrix(c(2, 1, 2, 1, 2,
+              3, 2, 0, 0, 1,
+              1, 0, 2, 2, 3), 
+            nrow = 3, byrow = TRUE)
+
+
+X <- as.rankings(X)
+
+
+adjacency(X)
+adjacency(X, weigh
+
+
 
 
 
