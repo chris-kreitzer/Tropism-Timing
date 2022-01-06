@@ -82,8 +82,6 @@ X <- matrix(c(2, 1, 2, 1, 2,
 X <- as.rankings(X)
 
 
-adjacency(X)
-adjacency(X, weigh
 
 
 
