@@ -99,7 +99,38 @@ axis(1, at = seq_len(11), labels = rownames(qv$qvframe), las = 2, cex.axis = 0.6
 
 
 
-## start
+## PanCancer: Starting with Francisco's Table
+data = read_excel('Data/tableS2_data.xlsx', skip = 2)
+data = data[, c('cancer_type', 'sample_type', 'met_site_mapped', 'met_event_age')]
+
+#' split the data
+ncols_max = max(stringr::str_count(data$met_event_age, '\\/'), na.rm = T) + 1
+column_names = paste0('Time', 1:ncols_max)
+data_split = tidyr::separate(data = data,
+                             col = 'met_site_mapped',
+                             sep = '\\/',
+                             into = column_names,
+                             remove = F,
+                             convert = T)
+View(data_split)
+
+# starting with Prostate first
+data_prostate = data[which(data$cancer_type == 'prostate cancer'), ]
+data_PP = data_prostate[which(data_prostate$sample_type == 'Primary'), ]
+data_PP_death = data_PP[which(data_PP$os_status == 'dead'), ]
+
+# sites
+ncols_max = max(stringr::str_count(data_PP_death$met_event_age, '\\/'), na.rm = T) + 1
+sites_PP = data_PP_death[, c('met_site_mapped', 'met_event_age')]
+column_names = paste0("Time", 1:ncols_max)
+
+#' split the dataframe
+data_pp_split = tidyr::separate(sites_PP, 
+                                col = met_event_age, 
+                                sep = '\\/', 
+                                into = column_names,
+                                remove = F, convert = T)
+
 
 
 
