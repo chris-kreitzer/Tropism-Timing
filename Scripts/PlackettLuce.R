@@ -15,28 +15,6 @@ library(PlackettLuce)
 ## Data
 data = read_excel('Data/tableS2_data.xlsx', skip = 2)
 
-# starting with Prostate first
-data_prostate = data[which(data$cancer_type == 'prostate cancer'), ]
-data_PP = data_prostate[which(data_prostate$sample_type == 'Primary'), ]
-data_PP_death = data_PP[which(data_PP$os_status == 'dead'), ]
-
-sites = as.data.frame(data_PP_death[, c('met_site_mapped')])
-sites_split = strsplit(as.character(sites$met_site_mapped), '/', fixed = T)
-max.length = max(sapply(sites_split, length))
-sites_new = lapply(sites_split, function(x){c(x, rep(NA, max.length - length(x)))})
-sites_new = as.data.frame(do.call(rbind, sites_new))
-sites_new = sites_new[!is.na(sites_new$V1), ]
-colnames(sites_new) = paste0('rank', seq(1, length(sites_new)))
-sites_new = sites_new[!is.na(sites_new$rank2), ]
-sites_new = sites_new[which(sites_new$rank1 != sites_new$rank2), ]
-
-#' make a ranking object
-x = as.matrix(sites_new)
-y = as.rankings(x, input = 'orderings')
-mod = PlackettLuce(y)
-avRank <- apply(y, 2, function(x) mean(x[x > 0]))
-sort(avRank)
-
 
 #' dummy example with 10 rankings and 11 items to choose;
 #' see google doc for example
@@ -104,7 +82,6 @@ axis(1, at = seq_len(11), labels = rownames(qv$qvframe), las = 2, cex.axis = 0.6
 ###############################################################################
 ###############################################################################
 ## PanCancer: Starting with Francisco's Table
-data = read_excel('Data/tableS2_data.xlsx', skip = 2)
 data = data[, c('cancer_type', 'sample_type', 'met_site_mapped', 'met_event_age')]
 
 #' split the data
@@ -210,26 +187,6 @@ x_ranked = as.rankings(x = x_matrix,
 z = PlackettLuce(rankings = x_ranked)
 
 summary(z)
-str(mod)
 
-
-
-
-
-
-str(mod2)
-
-
-
-d
-#' exploratory function
-avRank = apply(dummy.ranking, 2, function(x) mean(x[x > 0]))
-barplot(sort(avRank), las = 2, ylab = 'average rank')
-
-#' statistically modelling the outcome with PlackettLuce
-mod2 = PlackettLuce(rankings = dummy.ranking)
-coef(summary(mod))
-plot(sort(coef(mod)))
-abline(h = 0)
 
 
