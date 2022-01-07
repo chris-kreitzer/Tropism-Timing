@@ -38,52 +38,47 @@ avRank <- apply(y, 2, function(x) mean(x[x > 0]))
 sort(avRank)
 
 
-#' dummy example with 5 rankings and 10 items to choose
-dummy = matrix(rank1 = c('regio', 'bone', 'bladder', 'other', 'bone', 'dist', 'dist', 'bone', 'bladder', 'dist'),
-                   rank2 = c('bladder', 'other', 'bone', 'adrenal', 'bone', 'bone', 'regio', 'regio', 'gential', 'regio'),
-                   rank3 = c('gential', 'dist', 'other', 'regio', NA, 'liver', 'bone', 'bone', 'other', 'other'),
-                   rank4 = c('other', 'regio', 'dist', 'bladder', NA, NA, 'other', 'dist', 'breast', 'dist'),
-                   rank5 = c('bone', 'genital', 'regio', 'genital', NA, NA, 'cns_brain', 'periphalNS', 'bone', 'regio'))
+#' dummy example with 10 rankings and 11 items to choose;
+#' see google doc for example
+# dummy = matrix(c(1,2,3,4,5, NA, NA, NA, NA, NA, NA,
+#                  4, NA, 5, 2,1,3, NA, NA, NA, NA, NA,
+#                  5, 1, NA, 3, 2, 4, NA, NA, NA, NA, NA,
+#                  3, 4, 5, 1, NA, NA, 2, NA, NA, NA, NA,
+#                  NA, NA, NA, NA, 1, NA, NA, NA, NA, NA, NA,
+#                  NA, NA, NA, NA, 2, 1, NA, NA, NA, NA, NA,
+#                  2, NA, NA, 4, 3, 1, NA, 5, NA, NA, 3,
+#                  2, NA, NA, NA, 1, 3, NA, NA, 4, NA, NA,
+#                  NA, 1, 2, 3, 5, NA, NA, NA, NA, 4, NA,
+#                  2, NA, NA, 3, NA, 1, NA, NA, NA, NA, NA),
+#                nrow = 10, byrow = T)
 
-dummy = as.matrix(dummy)
-
-
-dummy.ranking = as.rankings(x = dummy, input = 'orderings')
-dummy.ranking[1]
-
-mod = PlackettLuce(rankings = dummy.ranking)
-summary(mod)
-coefs2 = round(coef(mod), 2)
-
-
-str(dummy.ranking)
+# colnames(dummy) = c('regio', 'bladder', 'gential', 'other', 'bone',
+#                     'dist', 'adrenal', 'cns', 'peripheral', 'breast', 'liver')
 
 
+dummy = matrix(c(1,2,3,4,5,
+                 5,4,6,1,3,
+                 2,5,4,6,1,
+                 4,7,1,2,3,
+                 5, NA, NA, NA, NA,
+                 6,5,11, NA, NA,
+                 6,1,5,4,8,
+                 5,1,6,9,NA,
+                 2,3,4,10,5,
+                 6,1,4, NA, NA),
+               nrow = 10, byrow = T)
+colnames(dummy) = paste0('rank', seq(1, 5, 1))
 
-R <- as.rankings(nascar, input = "orderings", items = attr(nascar, "drivers"))
-keep <- seq_len(84)
-R2 <- R[, keep]
-str(R2)
+sites = c('regio', 'bladder', 'gential', 'other', 'bone',
+          'dist', 'adrenal', 'cns', 'peripheral', 'breast', 'liver')
+names(sites) = seq(1,11, 1)
+attr(dummy, which = 'sites') = sites
 
-mod <- PlackettLuce(R2, npseudo = 0)
+#' make a ranking object
+dummy.ranking = as.rankings(x = dummy, 
+                            input = 'orderings', 
+                            items = attr(dummy, 'sites'))
 
-summary(mod)
-
-
-attr(R, which = 'dimnames')
-
-
-X <- matrix(c(2, 1, 2, 1, 2,
-              3, 2, 0, 0, 1,
-              1, 0, 2, 2, 3), 
-            nrow = 3, byrow = TRUE)
-
-
-X <- as.rankings(X)
-
-
-
-
-
-
+mod = PlackettLuce(rankings = dummy.ranking, npseudo = 0)
+coef(summary(mod))
 
