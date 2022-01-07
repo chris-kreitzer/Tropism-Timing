@@ -40,6 +40,7 @@ sort(avRank)
 
 #' dummy example with 10 rankings and 11 items to choose;
 #' see google doc for example
+
 # dummy = matrix(c(1,2,3,4,5, NA, NA, NA, NA, NA, NA,
 #                  4, NA, 5, 2,1,3, NA, NA, NA, NA, NA,
 #                  5, 1, NA, 3, 2, 4, NA, NA, NA, NA, NA,
@@ -54,7 +55,6 @@ sort(avRank)
 
 # colnames(dummy) = c('regio', 'bladder', 'gential', 'other', 'bone',
 #                     'dist', 'adrenal', 'cns', 'peripheral', 'breast', 'liver')
-
 
 dummy = matrix(c(1,2,3,4,5,
                  5,4,6,1,3,
@@ -79,6 +79,37 @@ dummy.ranking = as.rankings(x = dummy,
                             input = 'orderings', 
                             items = attr(dummy, 'sites'))
 
-mod = PlackettLuce(rankings = dummy.ranking, npseudo = 0)
+#' exploratory function
+avRank = apply(dummy.ranking, 2, function(x) mean(x[x > 0]))
+mod = PlackettLuce(rankings = dummy.ranking)
 coef(summary(mod))
+plot(sort(coef(mod)))
+abline(h = 0)
+
+#' quasi-variance errors; if the error intervals overlap with another
+#' we can say that those are significantly different
+qv = qvcalc(mod)
+qv$qvframe = qv$qvframe[order(coef(mod)),]
+plot(qv, xlab = NULL, ylab = "Ability (log)", main = NULL,
+     xaxt = "n", xlim = c(1, 11))
+
+axis(1, at = seq_len(11), labels = rownames(qv$qvframe), las = 2, cex.axis = 0.6)
+
+
+adjacency(dummy.ranking)
+
+summary(mod, ref = NULL)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
