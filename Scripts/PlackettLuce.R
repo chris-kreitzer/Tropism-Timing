@@ -98,6 +98,9 @@ plot(qv, xlab = NULL, ylab = "Ability (log)", main = NULL,
 axis(1, at = seq_len(11), labels = rownames(qv$qvframe), las = 2, cex.axis = 0.6)
 
 
+
+
+
 ###############################################################################
 ###############################################################################
 ## PanCancer: Starting with Francisco's Table
@@ -140,8 +143,63 @@ abline(h = quantile(data_split$metCount, probs = 0.9),
        lwd = 2,
        lty = 'dashed')
 
+#' just keep samples < 12 metastatic sites
+data_split = data_split[which(data_split$metCount <= 12), ]
 
 
 
 
+###############################################################################
+###############################################################################
+#' taking prostate cancer as an example; where we compare the BradleyTerry model with 
+#' the PlackettLuce model (moreover, we can reference this with the PanCancer cohort)
+Prostate = data_split[which(data_split$cancer_type == 'prostate cancer'), ]
 
+#' delete columns with no entry
+for(i in 4:26){
+  print(i)
+  if(all(is.na(Prostate[, i]))){
+    Prostate[, i] = NULL
+  }
+}
+Prostate[,16:20] = NULL
+Prostate[,29:39] = NULL
+
+#' how many unique sites are there in the data?
+unique_sites_Prostate = as.character(unique(unlist(Prostate[, 4:15])))
+names(unique_sites_Prostate) = seq(1, length(unique(unique_sites_Prostate)), 1)
+
+Prostate_rankings = Prostate[, 4:15]
+
+#' recode the named characters into numeric values
+Prostate_rankings[Prostate_rankings == "regional_lymph"] = 1L
+Prostate_rankings[Prostate_rankings == "genital_male"] = 4L
+Prostate_rankings[Prostate_rankings == "lung"] = 7L
+Prostate_rankings[Prostate_rankings == "peritoneum"] = 10L
+Prostate_rankings[Prostate_rankings == "pleura"] = 13L
+Prostate_rankings[Prostate_rankings == "adrenal_gland"] = 16L
+Prostate_rankings[Prostate_rankings == "breast"] = 19L
+Prostate_rankings[Prostate_rankings == "mediastinum"] = 22L
+Prostate_rankings[Prostate_rankings == "regional_lymph"] = 1L
+Prostate_rankings[Prostate_rankings == "other"] = 2L
+Prostate_rankings[Prostate_rankings == "dist_lymph"] = 5L
+Prostate_rankings[Prostate_rankings == "liver"] = 8L
+Prostate_rankings[Prostate_rankings == "bowel"] = 11L
+Prostate_rankings[Prostate_rankings == "kidney"] = 14L
+Prostate_rankings[Prostate_rankings == "skin"] = 17L
+Prostate_rankings[Prostate_rankings == "na"] = 20L
+Prostate_rankings[Prostate_rankings == "head_and_neck"] = 23L
+Prostate_rankings[Prostate_rankings == "bone"] = 3L
+Prostate_rankings[Prostate_rankings == "bladder_or_urinary_tract"] = 6L
+Prostate_rankings[Prostate_rankings == "lymph"] = 9L
+Prostate_rankings[Prostate_rankings == "cns_brain"] = 12L
+Prostate_rankings[Prostate_rankings == "peripheral_nervous_system"] = 15L
+Prostate_rankings[Prostate_rankings == "biliary_tract"] = 18L
+
+#' conversion to matrix
+x = as.matrix(Prostate_rankings, rownames.force = F)
+mode(x) = 'numeric'
+attr(x, which = 'sites') = unique_sites_Prostate
+
+#' make ranking of the whole data-frame
+x_ranked = as.rankings(x = x, input = 'orderings', items = attr(x, 'sites'))
