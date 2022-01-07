@@ -81,6 +81,9 @@ dummy.ranking = as.rankings(x = dummy,
 
 #' exploratory function
 avRank = apply(dummy.ranking, 2, function(x) mean(x[x > 0]))
+barplot(sort(avRank), las = 2, ylab = 'average rank')
+
+#' statistically modelling the outcome with PlackettLuce
 mod = PlackettLuce(rankings = dummy.ranking)
 coef(summary(mod))
 plot(sort(coef(mod)))
@@ -92,8 +95,18 @@ qv = qvcalc(mod)
 qv$qvframe = qv$qvframe[order(coef(mod)),]
 plot(qv, xlab = NULL, ylab = "Ability (log)", main = NULL,
      xaxt = "n", xlim = c(1, 11))
-
 axis(1, at = seq_len(11), labels = rownames(qv$qvframe), las = 2, cex.axis = 0.6)
+
+
+
+## start
+
+
+
+
+
+
+
 
 
 adjacency(dummy.ranking)
