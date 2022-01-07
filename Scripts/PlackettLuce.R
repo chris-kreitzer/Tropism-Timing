@@ -165,11 +165,13 @@ for(i in 4:26){
 Prostate[,16:20] = NULL
 Prostate[,29:39] = NULL
 
-#' how many unique sites are there in the data?
-unique_sites_Prostate = as.character(unique(unlist(Prostate[, 4:15])))
-names(unique_sites_Prostate) = seq(1, length(unique(unique_sites_Prostate)), 1)
-
+#' work on subset data and substitute the characters
 Prostate_rankings = Prostate[, 4:15]
+Prostate_rankings = Prostate_rankings[which(Prostate_rankings$Rank1 != 'na'), ]
+
+unique_sites_Prostate = as.character(unique(unlist(Prostate_rankings[, 1:ncol(Prostate_rankings)])))
+unique_sites_Prostate = unique_sites_Prostate[!is.na(unique_sites_Prostate)]
+names(unique_sites_Prostate) = seq(1, length(unique(unique_sites_Prostate)), 1)
 
 #' recode the named characters into numeric values
 Prostate_rankings[Prostate_rankings == "regional_lymph"] = 1L
@@ -179,16 +181,14 @@ Prostate_rankings[Prostate_rankings == "peritoneum"] = 10L
 Prostate_rankings[Prostate_rankings == "pleura"] = 13L
 Prostate_rankings[Prostate_rankings == "adrenal_gland"] = 16L
 Prostate_rankings[Prostate_rankings == "breast"] = 19L
-Prostate_rankings[Prostate_rankings == "mediastinum"] = 22L
-Prostate_rankings[Prostate_rankings == "regional_lymph"] = 1L
+Prostate_rankings[Prostate_rankings == "mediastinum"] = 20L
 Prostate_rankings[Prostate_rankings == "other"] = 2L
 Prostate_rankings[Prostate_rankings == "dist_lymph"] = 5L
 Prostate_rankings[Prostate_rankings == "liver"] = 8L
 Prostate_rankings[Prostate_rankings == "bowel"] = 11L
 Prostate_rankings[Prostate_rankings == "kidney"] = 14L
 Prostate_rankings[Prostate_rankings == "skin"] = 17L
-Prostate_rankings[Prostate_rankings == "na"] = 20L
-Prostate_rankings[Prostate_rankings == "head_and_neck"] = 23L
+Prostate_rankings[Prostate_rankings == "head_and_neck"] = 21L
 Prostate_rankings[Prostate_rankings == "bone"] = 3L
 Prostate_rankings[Prostate_rankings == "bladder_or_urinary_tract"] = 6L
 Prostate_rankings[Prostate_rankings == "lymph"] = 9L
@@ -196,10 +196,40 @@ Prostate_rankings[Prostate_rankings == "cns_brain"] = 12L
 Prostate_rankings[Prostate_rankings == "peripheral_nervous_system"] = 15L
 Prostate_rankings[Prostate_rankings == "biliary_tract"] = 18L
 
-#' conversion to matrix
-x = as.matrix(Prostate_rankings, rownames.force = F)
-mode(x) = 'numeric'
-attr(x, which = 'sites') = unique_sites_Prostate
+#' convert
+x_matrix = as.matrix(Prostate_rankings, rownames.force = F)
+mode(x_matrix) = 'numeric'
+attr(x_matrix, which = 'sites') = unique_sites_Prostate
 
-#' make ranking of the whole data-frame
-x_ranked = as.rankings(x = x, input = 'orderings', items = attr(x, 'sites'))
+#' rankings object
+x_ranked = as.rankings(x = x_matrix,
+                       input = 'orderings',
+                       items = attr(x_matrix, 'sites'))
+
+#' statistically modeling:
+z = PlackettLuce(rankings = x_ranked)
+
+summary(z)
+str(mod)
+
+
+
+
+
+
+str(mod2)
+
+
+
+d
+#' exploratory function
+avRank = apply(dummy.ranking, 2, function(x) mean(x[x > 0]))
+barplot(sort(avRank), las = 2, ylab = 'average rank')
+
+#' statistically modelling the outcome with PlackettLuce
+mod2 = PlackettLuce(rankings = dummy.ranking)
+coef(summary(mod))
+plot(sort(coef(mod)))
+abline(h = 0)
+
+
