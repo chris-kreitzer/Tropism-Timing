@@ -178,6 +178,14 @@ x_matrix = as.matrix(Prostate_rankings, rownames.force = F)
 mode(x_matrix) = 'numeric'
 attr(x_matrix, which = 'sites') = unique_sites_Prostate
 
+
+
+
+u = x_ranked[1:10]
+i = summary(PlackettLuce(u))
+summary(i)
+
+
 #' rankings object
 x_ranked = as.rankings(x = x_matrix,
                        input = 'orderings',
