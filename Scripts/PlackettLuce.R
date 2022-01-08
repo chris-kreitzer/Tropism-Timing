@@ -180,9 +180,19 @@ attr(x_matrix, which = 'sites') = unique_sites_Prostate
 
 
 
+y = x_matrix[1:6, 1:10]
+y[5,9] = 7L
+y[5,10] = 7L
+yr = as.rankings(y, input = 'orderings')
+summary(PlackettLuce(yr))
+
+
 
 u = x_ranked[1:10]
-i = summary(PlackettLuce(u))
+i = PlackettLuce(u)
+
+i$na.action
+
 summary(i)
 
 
