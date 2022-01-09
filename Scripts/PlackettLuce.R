@@ -114,11 +114,12 @@ for(i in 40:ncol(data_split)){
 unique_sites = as.character(unique(unlist(data_split[, 4:38])))
 data_split$metCount = rowSums(!is.na(data_split[, 4:38]))
 
-barplot(sort(data_split$metCount))
+barplot(sort(data_split$metCount, decreasing = T),main = 'PanCancer')
 abline(h = quantile(data_split$metCount, probs = 0.9),
        col = 'red',
        lwd = 2,
        lty = 'dashed')
+text(21000, 9.5, '90th percentile')
 
 #' just keep samples < 12 metastatic sites
 data_split = data_split[which(data_split$metCount <= 12), ]
