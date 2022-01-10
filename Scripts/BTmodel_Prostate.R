@@ -190,7 +190,9 @@ avRank = apply(x_ranked, 2, function(x) print(x))
 barplot(sort(apply(avRank, 2, function(x) mean(x[x>0])), decreasing = F),  
         las = 2, cex.axis = 0.85, cex.names = 0.65, ylab = 'average Rank')
 
-
+#' modeling with PlacketLuce
+# model_rank = PlackettLuce(rankings = x_ranked)
+# dotchart(sort(coef(model_rank)))
 
 
 ###############################################################################
@@ -227,14 +229,10 @@ dotchart(sort(ML_out), cex = 0.8,
 
 #' test for equality of player-strength
 equalp.test(all_vecML)
+specificp.test(all_vecML, 1)
 
 
 
-#' modeling with PlacketLuce
-model_rank = PlackettLuce(rankings = x_ranked, npseudo = 1)
-
-sort(coef(model_rank))
-summary(model_rank)
 
 
 
