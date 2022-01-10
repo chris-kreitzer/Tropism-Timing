@@ -199,13 +199,36 @@ summary(model_rank)
 
 
 
-model_rank = PlackettLuce(x_ranked, npseudo = 0)
-avRank = apply(x_ranked, 2, function(x) mean(x[x > 0]))
-coefs = round(coef(model_rank)[order(avRank)], 2)
-sort(coefs)
-sort(avRank)
-coef(model_rank, ref = NULL)
-qvcalc(model_rank)
+## hyper2 package
+test = data_split[1:10, c('Rank1', 'Rank2', 'Rank3', 'Rank4')]
+r1 = as.character(test[1, ])
+r2 = as.character(test[2, ])
+r3 = as.character(test[3, ])
+r4 = as.character(test[4, ])
+r5 = as.character(test[5, ])
+
+H = rankvec_likelihood(r1)
+H = H + rankvec_likelihood(r2)
+H = H + rankvec_likelihood(r4)
+H = H + rankvec_likelihood(r5)
+
+maxp(H)
+
+#####################################
+for(i in 1:nrow(test)){
+  row_i = as.character(test[i, ])
+  row_i = row_i[!duplicated(row_i)]
+  hy_single = rankvec_likelihood(row_i)
+  #hy = hy_single
+  hy = hy + hy_single
+}
+
+o = maxp(hy)
+dotchart(o)
+
+a = as.character(test[1,])
+a = a[!duplicated(a)]
+
 
 
 ## test
