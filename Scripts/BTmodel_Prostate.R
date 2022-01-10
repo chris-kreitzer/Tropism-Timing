@@ -57,15 +57,18 @@ abline(h = quantile(data_split$metCount, probs = 0.9),
 data_split = data_split[which(data_split$metCount <= 12), ]
 
 
+###############################################################################
+###############################################################################
+#' Prostate
+Prostate = data_split[which(data_split$cancer_type == 'prostate cancer'), ]
+Prostate = Prostate[which(Prostate$Rank1 != 'na'), ]
 
-
-
-
-
-
-
-
-
+barplot(sort(table(Prostate$metCount), decreasing = T),
+        xlab = 'Metastases', ylab = 'Count', main = 'Metastatic counts for prostate cancer')
+par(mar = c(8, 4,4,3))
+barplot(sort(table(Prostate$Rank1), decreasing = T), las = 2, cex.names = 0.65)
+barplot(sort(table(Prostate$Rank2), decreasing = T), las = 2, cex.names = 0.65)
+barplot(sort(table(Prostate$Rank3), decreasing = T), las = 2, cex.names = 0.65)
 
 
 
