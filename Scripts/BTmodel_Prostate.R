@@ -215,15 +215,15 @@ H = H + rankvec_likelihood(r5)
 maxp(H)
 
 #####################################
-for(i in 1:nrow(test)){
-  row_i = as.character(test[i, ])
+li = list()
+for(i in 1:nrow(x_matrix)){
+  row_i = as.character(x_matrix[i, ])
   row_i = row_i[!duplicated(row_i)]
-  hy_single = rankvec_likelihood(row_i)
-  #hy = hy_single
-  hy = hy + hy_single
+  li[[i]] = rankvec_likelihood(row_i)
 }
+lif = Reduce('+', li)
 
-o = maxp(hy)
+o = maxp(lif)
 dotchart(o)
 
 a = as.character(test[1,])
