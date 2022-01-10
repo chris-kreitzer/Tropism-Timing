@@ -137,13 +137,13 @@ ML_Prostate = BT_ML(m)
 Prostate = Prostate[, 4:ncol(Prostate)]
 
 #' delete columns with no entry
-for(i in 4:26){
-  print(i)
+for(i in 1:13){
   if(all(is.na(Prostate[, i]))){
     Prostate[, i] = NULL
   }
 }
-Prostate[,25:ncol(Prostate)] = NULL
+
+#' delete time for now
 Prostate[,13:ncol(Prostate)] = NULL
 
 #' unique sites
@@ -191,6 +191,45 @@ barplot(sort(apply(avRank, 2, function(x) mean(x[x>0])), decreasing = F),
         las = 2, cex.axis = 0.85, cex.names = 0.65, ylab = 'average Rank')
 
 
+
+
+###############################################################################
+## hyper2 package: The Bradley-Terry model for datasets involving paired comparisons 
+## has wide uptake in the R community. However, existing functionality is restricted 
+## to paired comparisons. The canonical problem is to consider n players who compete 
+## against one another; the basic inference problem is to estimate numbers p = (p1, . . . , pn), 
+## pi > 0, P pi = 1 which correspond to player “strengths”. Information about the pi may be 
+## obtained from the results of paired comparisons between the players.
+
+single_vectorML = list()
+for(i in 1:nrow(x_matrix)){
+  row_i = as.character(x_matrix[i, ])
+  row_i = row_i[!duplicated(row_i)]
+  row_i = row_i[!is.na(row_i)]
+  single_vectorML[[i]] = rankvec_likelihood(row_i)
+}
+
+#' sum up the vector
+all_vecML = Reduce('+', single_vectorML)
+
+ML_out = maxp(all_vecML)
+
+#' make a visualization
+names(ML_out) = c('regional_lymph', 'peritoneum', 'bowel', 'cns_brain', 'pleura', 
+                  'kidney', 'peripheral_nervous_system', 'adrenal_gland', 'skin', 'biliary_tract',
+                  'breast', 'other', 'mediastinum', 'head_and_neck', 'bone', 'genital_male',
+                  'dist_lymph', 'bladder_or_uninary_tract', 'lung', 'liver', 'lymph')
+
+dotchart(sort(ML_out), cex = 0.8,
+         pch = 19,
+         xlab = 'Maximum likelihood [hyper2]')
+
+
+#' test for equality of player-strength
+equalp.test(all_vecML)
+
+
+
 #' modeling with PlacketLuce
 model_rank = PlackettLuce(rankings = x_ranked, npseudo = 1)
 
@@ -198,56 +237,4 @@ sort(coef(model_rank))
 summary(model_rank)
 
 
-
-## hyper2 package
-test = data_split[1:10, c('Rank1', 'Rank2', 'Rank3', 'Rank4')]
-r1 = as.character(test[1, ])
-r2 = as.character(test[2, ])
-r3 = as.character(test[3, ])
-r4 = as.character(test[4, ])
-r5 = as.character(test[5, ])
-
-H = rankvec_likelihood(r1)
-H = H + rankvec_likelihood(r2)
-H = H + rankvec_likelihood(r4)
-H = H + rankvec_likelihood(r5)
-
-maxp(H)
-
-#####################################
-li = list()
-for(i in 1:nrow(x_matrix)){
-  row_i = as.character(x_matrix[i, ])
-  row_i = row_i[!duplicated(row_i)]
-  li[[i]] = rankvec_likelihood(row_i)
-}
-lif = Reduce('+', li)
-
-o = maxp(lif)
-dotchart(o)
-
-a = as.character(test[1,])
-a = a[!duplicated(a)]
-
-
-
-## test
-
-test = Prostate[1:20, 1:10]
-test_ranked = as.rankings(test, input = 'orderings')
-
-b = apply(test_ranked, 2, function(x) print(x))
-apply(b, 2, function(x) mean(x[x>0]))
-mean(b[,3])
-u = b[,3] 
-u = as.numeric(u)
-weighted.mean(u, w = c(1,1,1,1,1,1,1,0,1,1,1,0,0,1,1,1,1,1,1,1))
-weighted.mean(u, w = c(rep(0, 16), 10, 0, 0, 0))
-
-b[which(b[,2] == 0), 2] = NA
-
-mean(b[,2], na.rm = T)
-weighted.mean(b[, 5], w = rep(length(b[which(b[, 5] != 0), 5]) / nrow(b), nrow(b)))
-
-mean(u)
 
