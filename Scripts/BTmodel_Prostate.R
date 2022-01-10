@@ -1,5 +1,6 @@
 ## Tour through Prostate Cancer;
-## We start with the BradleyTerry Model and move on to the PlackettLuce model
+## We start with the BradleyTerry Model and move on to the 
+## PlackettLuce model; specifically, we will work with the hyper2 package
 ## 
 ## 01/09/2022
 ## chris-kreitzer
