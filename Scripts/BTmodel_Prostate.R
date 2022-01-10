@@ -179,18 +179,52 @@ x_matrix = as.matrix(Prostate, rownames.force = F)
 mode(x_matrix) = 'numeric'
 attr(x_matrix, which = 'sites') = unique_sites_Prostate
 
+#' make the modeling:
+x_ranked = as.rankings(x_matrix, 
+                       input = 'orderings', 
+                       items = attr(x_matrix, 'sites'))
+
+
+#' average rank of metastatic site
+avRank = apply(x_ranked, 2, function(x) print(x))
+barplot(sort(apply(avRank, 2, function(x) mean(x[x>0])), decreasing = F),  
+        las = 2, cex.axis = 0.85, cex.names = 0.65, ylab = 'average Rank')
+
+
+#' modeling with PlacketLuce
+model_rank = PlackettLuce(rankings = x_ranked, npseudo = 1)
+
+sort(coef(model_rank))
+summary(model_rank)
 
 
 
+model_rank = PlackettLuce(x_ranked, npseudo = 0)
+avRank = apply(x_ranked, 2, function(x) mean(x[x > 0]))
+coefs = round(coef(model_rank)[order(avRank)], 2)
+sort(coefs)
+sort(avRank)
+coef(model_rank, ref = NULL)
+qvcalc(model_rank)
 
 
+## test
 
+test = Prostate[1:20, 1:10]
+test_ranked = as.rankings(test, input = 'orderings')
 
+b = apply(test_ranked, 2, function(x) print(x))
+apply(b, 2, function(x) mean(x[x>0]))
+mean(b[,3])
+u = b[,3] 
+u = as.numeric(u)
+weighted.mean(u, w = c(1,1,1,1,1,1,1,0,1,1,1,0,0,1,1,1,1,1,1,1))
+weighted.mean(u, w = c(rep(0, 16), 10, 0, 0, 0))
 
+b[which(b[,2] == 0), 2] = NA
 
+mean(b[,2], na.rm = T)
+weighted.mean(b[, 5], w = rep(length(b[which(b[, 5] != 0), 5]) / nrow(b), nrow(b)))
 
-
-
-
-
+mean(u)
 

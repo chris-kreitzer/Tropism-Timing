@@ -181,31 +181,3 @@ attr(x_matrix, which = 'sites') = unique_sites_Prostate
 
 
 
-y = x_matrix[1:6, 1:10]
-y[5,9] = 7L
-y[5,10] = 7L
-yr = as.rankings(y, input = 'orderings')
-summary(PlackettLuce(yr))
-
-
-
-u = x_ranked[1:10]
-i = PlackettLuce(u)
-
-i$na.action
-
-summary(i)
-
-
-#' rankings object
-x_ranked = as.rankings(x = x_matrix,
-                       input = 'orderings',
-                       items = attr(x_matrix, 'sites'))
-
-#' statistically modeling:
-z = PlackettLuce(rankings = x_ranked)
-
-summary(z)
-
-
-
