@@ -12,6 +12,7 @@ setwd('~/Documents/GitHub/Tropism-Timing/')
 
 #install.packages('PlackettLuce')
 library(BradleyTerry2)
+library(readxl)
 
 
 ## Data
