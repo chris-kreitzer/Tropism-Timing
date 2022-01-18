@@ -64,10 +64,6 @@ Prostate = Prostate[,c(4:15, 40:51)]
 
 
 
-ddp.mskcc.org|darwindigital 
-cvr.mskcc.org
-
-bam files
 
 
 
