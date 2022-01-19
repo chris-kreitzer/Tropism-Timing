@@ -106,4 +106,43 @@ cols.num = 20:32
 data_split[cols.num] = sapply(data_split[cols.num], as.numeric)
 
 
+## Which sites are over represented among the two groups?
+mut = data_split[which(data_split$KRAS == 'mutant'), 7:18]
+mut_table = table(t(mut))
+par(mfrow = c(2,1))
+pdf("MetFrequency_COAD_KRAS.pdf", width = 10, height = 18) 
+barplot(sort(mut_table, decreasing = T), 
+        las = 2, 
+        cex.names = 0.65,
+        ylab = '#metastatic lesions',
+        yaxt = 'n',
+        ylim = c(0, 2100))
+axis(2, at = c(0, 500, 1000, 1500, 2001), labels = c(0, 500, 1000, 1500, 2000), line = -1.5, 
+     lwd = 2, lwd.ticks = 2, hadj = 1, padj = 0.5, las = 1)
+title(main = 'KRAS mutant Colorectal Cancers\nn=1,686')
+box(which = 'figure', lwd = 2)
+
+#' wild type data
+wt = data_split[which(data_split$KRAS == 'wt'), 7:18]
+wt_table = table(t(wt))
+barplot(sort(wt_table, decreasing = T), 
+        las = 2, 
+        cex.names = 0.65,
+        ylab = '#metastatic lesions',
+        yaxt = 'n',
+        ylim = c(0, 2100))
+axis(2, at = c(0, 500, 1000, 1500, 2001), labels = c(0, 500, 1000, 1500, 2000), line = -1.5, 
+     lwd = 2, lwd.ticks = 2, hadj = 1, padj = 0.5, las = 1)
+title(main = 'KRAS wild-type Colorectal Cancers\nn=2,063')
+box(which = 'figure', lwd = 2)
+
+dev.off(which = dev.cur())
+
+
+
+
+
+
+
+
 
