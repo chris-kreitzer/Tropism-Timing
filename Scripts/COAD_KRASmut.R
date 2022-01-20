@@ -12,6 +12,7 @@ clean()
 
 ## Libraries
 library(readxl)
+library(stringr)
 
 ## Input:
 #' COAD
@@ -137,6 +138,90 @@ title(main = 'KRAS wild-type Colorectal Cancers\nn=2,063')
 box(which = 'figure', lwd = 2)
 
 dev.off(which = dev.cur())
+
+#' Are lung metastasis recurring in patients with KRASmut?
+lung_mut = as.data.frame(apply(mut, 1, function(x) sum(str_count(string = x, pattern = 'lung'), na.rm = T)))
+colnames(lung_mut) = 'count'
+
+par(mfrow = c(2,1))
+v = lung_mut$count
+a = min(v)
+b = max(v)
+lung_hist = hist(v+0.001, 
+           breaks = b-a, 
+           xaxt = "n",
+           las = 1,
+           lwd = 2,
+           hadj = 1,
+           col = "orange",
+           panel.first = grid(), 
+           main = "Lung metastasis/patient\nKRAS-mutants", 
+           xlab = "")
+axis(side = 1, at = lung_hist$mids, labels = seq(a,b), lwd = 2)
+
+#' Lung metastasis at KRAS wt patient
+lung_wt = as.data.frame(apply(wt, 1, function(x) sum(str_count(string = x, pattern = 'lung'), na.rm = T)))
+colnames(lung_wt) = 'count'
+
+v = lung_wt$count
+a = min(v)
+b = max(v)
+lung_hist = hist(v + 0.001, 
+                 breaks = b - a, 
+                 xaxt = "n",
+                 las = 1,
+                 lwd = 2,
+                 hadj = 1,
+                 col = "orange",
+                 panel.first = grid(), 
+                 main = "Lung metastasis/patient\nKRAS-wt", 
+                 xlab = "")
+axis(side = 1, at = lung_hist$mids, labels = seq(a,b), lwd = 2)
+
+#' Lung metastatic recurrence attributable to KRASmut status?
+data_split$lungMets = apply(data_split[,7:18], 1, 
+                            function(x) sum(str_count(string = x, pattern = 'lung'), na.rm = T))
+data_split$lungMetsrel = ifelse(data_split$met_event_age != 1 & !data_split$lungMets %in% c(0,1), 
+                                data_split$lungMets / data_split$metCount, NA)
+
+par(oma = c(5,10,5,10))
+boxplot(data_split$lungMetsrel ~ data_split$KRAS,
+        las = 2,
+        xaxt = 'n',
+        width = c(1,1), 
+        col = 'orange', 
+        xlab = '',
+        ylab = 'avg.lung.met.fraction')
+axis(side = 1, at = c(1,2), labels = c('KRAS\nmutant', 'KRAS\nwt'),
+     font = 2, tick = F, outer = NA, line = 0.5)
+text(x = 1.5, y = 0.9, label = 'p-value = 0.598')
+box(lwd = 2)
+
+
+## Finding repetitive tropism patterns in the data:
+mut_all = data_split[which(data_split$KRAS == 'mutant'), 1:18]
+mut_rle = rle(mut_all$met_site_mapped)
+
+#' which pattern occurs most frequent?
+mut_rle$values[which.max(mut_rle$lengths)]
+
+met_seq = list()
+for(i in 3:max(mut_rle$lengths)){
+  seq_organgs = mut_rle$values[which(mut_rle$lengths == i)]
+  met_seq[[i]] = seq_organgs
+  names(met_seq)[[i]] = i
+}
+
+met_seq
+
+
+
+#' make a oncoplot for metastasis
+laml.maf = system.file('extdata', 'tcga_laml.maf.gz', package = 'maftools')
+laml = read.maf(maf = laml.maf,
+                verbose = FALSE)
+oncoplot(maf = laml, draw_titv = TRUE)
+
 
 
 
