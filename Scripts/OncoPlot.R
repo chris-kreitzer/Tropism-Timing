@@ -8,28 +8,46 @@
 ## chris-kreitzer
 
 
-unique_sites = as.character(unique(unlist(mut)))
-unique_sites = unique_sites[unique_sites != 'na']
+clean()
 
 
-ma = matrix(nrow = length(unique_sites), 
-            ncol = nrow(mut), 
-            dimnames = list(unique_sites, paste0('Patient', seq(1, nrow(mut)))))
+## Input:
+## see script: COAD_KRASmut.R [mut table]
+mut
 
 
-
-for(row in 1:nrow(mut)){
-  string = as.character(mut[row, ])
-  for(i in string){
-    if(i %in% row.names(ma)){
-      ma[which(row.names(ma) == i), row] = 1
+#' Function: create oncoMatrix-like
+OncoMatrix = function(M){
+  unique_sites = as.character(unique(unlist(M)))
+  unique_sites = unique_sites[unique_sites != 'na']
+  #' matrix
+  ma = matrix(nrow = length(unique_sites), 
+              ncol = nrow(M), 
+              dimnames = list(unique_sites, 
+                              paste0('Patient', seq(1, nrow(M)))))
+  
+  #' fill matrix with values
+  for(row in 1:nrow(M)){
+    string = as.character(M[row, ])
+    for(i in string){
+      if(i %in% row.names(ma)){
+        ma[which(row.names(ma) == i), row] = 1
+      }
     }
   }
+  
+  #' post modifications
+  x = which(apply(ma, 2, function(x) sum(x, na.rm = T)) == 0)
+  ma = ma[,-x]
+  ma[is.na(ma)] = 0
+  
+  rm(i, x, string)
+  return(ma)
+  
 }
 
-x = which(apply(ma, 2, function(x) sum(x, na.rm = T)) == 0)
-ma = ma[,-x]
-ma[is.na(ma)] = 0
+u = OncoMatrix(M = mut)
+View(u)
 
 
 #' make the MetaPlot
