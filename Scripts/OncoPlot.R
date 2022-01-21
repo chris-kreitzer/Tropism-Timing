@@ -31,7 +31,11 @@ OncoMatrix = function(M){
     string = as.character(M[row, ])
     for(i in string){
       if(i %in% row.names(ma)){
-        ma[which(row.names(ma) == i), row] = 1
+        if(length(string[which(string == i)]) > 1){
+          ma[which(row.names(ma) == i), row] = 2
+        } else {
+          ma[which(row.names(ma) == i), row] = 1
+        }
       }
     }
   }
