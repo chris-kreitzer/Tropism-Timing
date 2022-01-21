@@ -220,8 +220,9 @@ met_seq
 laml.maf = system.file('extdata', 'tcga_laml.maf.gz', package = 'maftools')
 laml = read.maf(maf = laml.maf,
                 verbose = FALSE)
-oncoplot(maf = laml, draw_titv = TRUE)
 
+oncoplot(maf = laml@summary)
+laml@summary
 
 
 
