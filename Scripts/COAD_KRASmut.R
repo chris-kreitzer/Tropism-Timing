@@ -215,16 +215,10 @@ for(i in 3:max(mut_rle$lengths)){
 met_seq
 
 
+## Co-occurrences (cooccur)
 
-#' make a oncoplot for metastasis
-laml.maf = system.file('extdata', 'tcga_laml.maf.gz', package = 'maftools')
-laml = read.maf(maf = laml.maf,
-                verbose = FALSE)
-
-oncoplot(maf = laml@summary)
-laml@summary
-
-
+co = cooccur(mat = r, type = 'spp_site', spp_names = T)
+summary(co)
 
 
 
