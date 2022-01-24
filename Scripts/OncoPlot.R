@@ -203,3 +203,21 @@ title(main = 'MetaPlot for KRAS mutant Colorectal Cancer patients', line = 2, ou
       sub = 'n = 1660 patients')
 dev.off()
 
+
+## Hierchacial clustering
+library(ade4)
+#' Jaccard Similarity matrix
+dist_matrix = as.matrix(dist.binary(df = x, method = 1))
+hc = hclust(dist.binary(df = x, method = 1), method = 'ward.D')
+plot(hc, hang = 0.02, frame.plot = T, xlab = '', ylab = '', yaxt = 'n', main = '')
+rect.hclust(hc , k = 4, border = 2:6)
+title(main = 'Ward.D Clustering on KRAS mut patients')
+
+
+## Cooccur further methods:
+#' cooccur: Probabilistic Species Co-Occurrence
+#' Analysis in Rfile:///Users/chriskreitzer/Downloads/v69c02%20(2).pdf
+#' https://cran.r-project.org/web/packages/cooccur/cooccur.pdf
+
+
+#' out
