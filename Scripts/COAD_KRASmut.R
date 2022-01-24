@@ -216,9 +216,11 @@ met_seq
 
 
 ## Co-occurrences (cooccur)
-
 co = cooccur(mat = r, type = 'spp_site', spp_names = T)
 summary(co)
+
+
+
 
 
 
