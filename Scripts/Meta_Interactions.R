@@ -1,6 +1,21 @@
+## Pairwise fishers exact test;
+## Idea based on https://github.com/PoisonAlien/maftools/blob/master/R/somaticInteractions.R
+##
+## Input data frame: 
+#' columns = Rank
+#' rows = patients
+#' as: 
+mut = read.csv('Data/binary_mutation_test.txt', sep = '\t')
+
+## 01/23/22
+## chris-kreitzer
+
+
+clean()
 library(data.table)
 
 
+## Function:
 Interactions = function(M, pvalue = c(0.05, 0.01), 
                         colPal = "BrBG", 
                         limitColorBreaks = T, 
