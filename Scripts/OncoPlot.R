@@ -13,7 +13,8 @@ clean()
 
 ## Input:
 ## see script: COAD_KRASmut.R [mut table]
-mut
+# write.table(mut, file = 'Data/binary_mutation_test.txt', sep = '\t', row.names = F)
+mut = read.csv('Data/binary_mutation_test.txt', sep = '\t')
 
 
 ## Functions: 
@@ -78,7 +79,9 @@ OncoMatrix = function(M){
 
 
 #' Visualization
-MetaPlot = function(M){
+MetaPlot = function(M, 
+                    fontSize = 0.8,
+                    legendFontSize = 1){
   mat_origin = M
   mat_origin[mat_origin == 0] = ""
   mat_origin[mat_origin == 1] = 'single'
@@ -86,10 +89,10 @@ MetaPlot = function(M){
   
   nsamps = as.numeric(ncol(mat_origin))
   percent_alt = apply(M, 1, function(x) length(x[x != 0]))
-  percent_alt = paste0(rev(round(percent_alt * 100/nsamps)), "%")
+  #percent_alt = paste0(rev(round(percent_alt * 100/nsamps)), "%")
   
   #' color code
-  vc_col = c('red', 'darkred')
+  vc_col = c('red', 'black')
   names(vc_col) = c('single', 'multi')
   
   vc_codes = c("", 'single', 'multi')
@@ -138,11 +141,10 @@ MetaPlot = function(M){
           add = TRUE)
   }
   
-  bgCol = 'grey90'
+  bgCol = 'grey75'
   borderCol = 'white'
   sepwd_genes = 0.5
   sepwd_samples = 0.20
-  fontSize = 0.8
   
   #' adding background
   nm = t(apply(ma.sorted$M, 2, rev))
@@ -160,9 +162,10 @@ MetaPlot = function(M){
   
   #' add grids
   abline(h = (1:ncol(nm)) + 0.5, col = borderCol, lwd = sepwd_genes)
-  abline(v = (1:nrow(nm)) + 0.5, col = borderCol, lwd = sepwd_samples)
+  # abline(v = (1:nrow(nm)) + 0.5, col = borderCol, lwd = sepwd_samples)
   
-  #' add column annotations
+  
+  #' column annotations: MetsRank
   mtext(text = colnames(nm)[ma.sorted$geneOrder], 
         side = 2, 
         at = ma.sorted$geneOrder,
@@ -170,13 +173,16 @@ MetaPlot = function(M){
         line = 0.4, 
         cex = fontSize, 
         las = 2)
-  mtext(text = percent_alt[ma.sorted$geneOrder], 
+  
+  #' add percentage at right side
+  mtext(text = rev(paste0(round(percent_alt[ma.sorted$geneOrder] / nsamps * 100), '%')), 
         side = 4, 
-        at = ma.sorted$geneOrder,
+        at = 1:length(ma.sorted$geneOrder),
         font = 3, 
         line = 0.4, 
         cex = fontSize, 
         las = 2)
+  
   
   lep = legend("bottomright", 
                legend = names(vc_col[vc_codes[2:length(vc_codes)]]),
@@ -185,11 +191,15 @@ MetaPlot = function(M){
                bty = "n",
                pch = 15, 
                xpd = TRUE, 
-               xjust = 0, yjust = 0, cex = legendFontSize)
-  
+               xjust = 0, yjust = 0, 
+               cex = legendFontSize)
   
 }
 
 dev.off()
-MetaPlot(M = u)
+pdf(file = 'MetaPlot_KRASmut.pdf', width = 14, height = 8.5)
+MetaPlot(M = x)
+title(main = 'MetaPlot for KRAS mutant Colorectal Cancer patients', line = 2, outer = T,
+      sub = 'n = 1660 patients')
+dev.off()
 
