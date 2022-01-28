@@ -215,12 +215,6 @@ for(i in 3:max(mut_rle$lengths)){
 met_seq
 
 
-## Co-occurrences (cooccur)
-co = cooccur(mat = r, type = 'spp_site', spp_names = T)
-summary(co)
-
-
-
 
 
 
